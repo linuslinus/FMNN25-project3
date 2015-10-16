@@ -10,7 +10,7 @@ def is_outer(rank):
 
 def print_solution(solmatrix, sol1, sol2, sol3, sol_rows, sol_cols, n):
 	solmatrix[n+1:sol_rows, 0:n] = rearrage_vector(sol1,n,n) 
-	solmatrix[0:sol_rows, n:2*n] = rearrage_vector(sol2,2*n+1, n)
+	solmatrix[0:sol_rows, n:2*n] = rearrage_vector(sol2,2*n+1, n)[:,::-1]
 	solmatrix[0:n, 2*n:sol_cols] = rearrage_vector(sol3,n,n)[:,::-1] # need to rotat this 
 	solmatrix[solmatrix == 0.] = np.nan
 	plotFunc.plot_temp(solmatrix)
