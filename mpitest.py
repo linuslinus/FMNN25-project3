@@ -6,11 +6,21 @@ import createMatrix
 
 def is_outer(rank):
     return rank == 0 or rank == 2
+   
+def print_solution(solmatrix, sol1, sol2, sol3, sol_rows, sol_cols, n):
+	solmatrix[n+1:sol_rows, 0:n] = rearrage_vector(sol1,n,n) # this part need som extra treatment since the RHS isnt on the correct side in the appartment 
+	solmatrix[0:sol_rows, n:2*n] = rearrage_vector(sol2,2*n+1, n)
+	solmatrix[0:n, 2*n:sol_cols] = rearrage_vector(sol3,n,n)
+	print(solmatrix)
+	
+def rearrage_vector(vec,rows, cols):
+	return np.fliplr(np.reshape(vec, (rows,cols) ,  order='C'))
+
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 n = 5
-dx = 1/(n + 1)
+dx = 1/float(n + 1)
 if is_outer(rank):
     A = createMatrix.generate_outer_matrix(n)
     rhs = createMatrix.generate_outer_rhs(n, np.zeros((n, 1)))
@@ -75,7 +85,7 @@ if rank == 2:
 	comm.Send(sol, dest = 1)
 
 if rank == 1:
-	sol_rows = 2*n +1
+	sol_rows = 2*n + 1
 	sol_cols = 3*n
 	solmatrix  = np.zeros((2*n +1 ,3*n)) # matrix for the appartment with all inner points
 	sol1 = np.zeros((n*n, 1))
@@ -83,14 +93,5 @@ if rank == 1:
 	sol2 = sol
 	comm.Recv(sol1, source = 0)
 	comm.Recv(sol2, source = 2)
-	print(len(sol1))
-	print(len(sol2))
-	print(len(sol3))
-	print_solution(solmatrix, sol1, sol2, sol3)
+	print_solution(solmatrix, sol1, sol2, sol3, sol_rows, sol_cols, n)
 
-
-def print_solution(solmatrix, sol1, sol2, sol3)
-	# 1) next step reshape all sols and insert these into the solmatrix
-	# 2) somhow print the solmatrix and fix the parts of the solmatrix that are not in the 				appartment 
-	# 3) also print the bounderys to the 
-	pass

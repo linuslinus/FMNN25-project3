@@ -6,7 +6,7 @@ def ind(i, j, n):
     return (n*i + j) % (n*n)
 
 def generate_outer_matrix(n):
-    dx = 1/(n + 1)
+    dx = 1/float(n + 1)
     A = np.zeros((n**2, n**2))
     for i in range(n):
         for j in range(n):
@@ -28,7 +28,7 @@ def generate_outer_matrix(n):
     return A/float(dx*dx)
     
 def generate_outer_rhs(n, bc_derivative):
-    dx = 1/(n + 1)
+    dx = 1/float(n + 1)
     rhs = np.zeros((n*n, 1))
     for i in range(n):
         for j in range(n):
@@ -44,7 +44,7 @@ def generate_outer_rhs(n, bc_derivative):
     return rhs/ float(dx*dx)
     
 def generate_inner_matrix(n): 
-    dx = 1/(n + 1) # dirichlet conditions for the large room 
+    dx = 1/float(n + 1) # dirichlet conditions for the large room 
     nelm = 2*n**2 + n #nbr of unknowns
     A = np.diag(-4*np.ones(nelm)) + np.diag(np.ones(nelm-n), n) + np.diag(np.ones(nelm-n), -n)
     sup_sub = np.ones(nelm - 1)
@@ -58,7 +58,7 @@ def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
     b1_generate. A1 refers to the middle room. '''
     
     nelm = 2*n**2 + n
-    dx = 1/(n + 1)
+    dx = 1/float(n + 1)
     
     b = np.zeros((nelm, 1))
     first_loop = n**2+2
@@ -88,11 +88,11 @@ def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     
     for k in range(first_loop):
         if k%n == n-1:
-            inner_rhs_initiated[k] -= gamma_2[k//n]/float(dx*dx)
+            inner_rhs_initiated[k] -= gamma_2[k//n]/(dx*dx) #k//n
     
     for k in range(first_loop, nelm):
         if k%n == 0:
-            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]/float(dx*dx)
+            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]/(dx*dx) # (k-1)//n - n
             
     return inner_rhs_initiated
 
