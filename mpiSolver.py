@@ -4,19 +4,27 @@ from mpi4py import MPI
 import createMatrix
 import plotFunc
 
+'''
+This script calculates the temperature in the room using three paralell processes. The temeperature i modelled using the laplacian equation with dirichlet and neumann condtions 
+'''
+
 def is_outer(rank):
     return rank == 0 or rank == 2
 	
 
 def print_solution(solmatrix, sol1, sol2, sol3, sol_rows, sol_cols, n):
 	solmatrix[n+1:sol_rows, 0:n] = rearrage_vector(sol1,n,n) 
-	solmatrix[0:sol_rows, n:2*n] = rearrage_vector(sol2,2*n+1, n)[:,::-1]
-	solmatrix[0:n, 2*n:sol_cols] = rearrage_vector(sol3,n,n)[:,::-1] # need to rotat this 
+	solmatrix[0:sol_rows, n:2*n] = rearrage_vector(sol2, 2*n+1, n, 'rotate')
+	solmatrix[0:n, 2*n:sol_cols] = rearrage_vector(sol3, n, n, 'rotate') # need to rotat this 
 	solmatrix[solmatrix == 0.] = np.nan
 	plotFunc.plot_temp(solmatrix)
 	
-def rearrage_vector(vec,rows, cols):
-	return np.fliplr(np.reshape(vec, (rows,cols) ,  order='C'))
+def rearrage_vector(vec, rows, cols, par = "None"):
+	if par == 'None':
+		return np.fliplr(np.reshape(vec, (rows,cols) ,  order='C'))
+	else:
+		return np.fliplr(np.reshape(vec, (rows,cols) ,  order='C'))[:,::-1]
+
 
 
 comm = MPI.COMM_WORLD
