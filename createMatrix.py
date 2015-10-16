@@ -45,8 +45,8 @@ def generate_outer_rhs(n, bc_derivative):
     
 def generate_inner_matrix(n): 
     dx = 1/(n + 1) # dirichlet conditions for the large room 
-    elm = 2*n**2 + n #nbr of unknowns
-    A = np.diag(-4*np.ones(elm)) + np.diag(np.ones(nelm-n), n) + np.diag(np.ones(nelm-n), -n)
+    nelm = 2*n**2 + n #nbr of unknowns
+    A = np.diag(-4*np.ones(nelm)) + np.diag(np.ones(nelm-n), n) + np.diag(np.ones(nelm-n), -n)
     sup_sub = np.ones(nelm - 1)
     for k in range(1, 2*n + 1):
         sup_sub[n*k -1] = 0
@@ -92,7 +92,7 @@ def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     
     for k in range(first_loop, nelm):
         if k%n == 0:
-            inner_rhs_initiated[k] -= gamma_1[(kk-1)//n - n]/dx/dx
+            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]/dx/dx
             
     return inner_rhs_initiated
 

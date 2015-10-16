@@ -2,6 +2,7 @@ import numpy as np
 import scipy.linalg as sl
 from mpi4py import MPI
 import createMatrix
+import plottest
 
 def is_outer(rank):
     return rank == 0 or rank == 2
@@ -13,12 +14,12 @@ dx = 1/(n + 1)
 if is_outer(rank):
     A = createMatrix.generate_outer_matrix(n)
     rhs = createMatrix.generate_outer_rhs(n, np.zeros((n, 1)))
-    print("###\n", rhs, "\n###\n")
+    #print("###\n", rhs, "\n###\n")
 else:
     A = createMatrix.generate_inner_matrix(n)
     rhs_init = createMatrix.generate_inner_rhs_init(n)
     rhs = rhs_init.copy()
-    print("###\n", A, "\n###\n")
+    #print("###\n", A, "\n###\n")
 
 if is_outer(rank):
     sol = np.zeros((n*n, 1))
@@ -40,11 +41,10 @@ for i in range(n_iter):
         else:
             for j in range(n):
                 bc_derivative[j] = (sol[j*n] - bc_rec[j])/2/dx
-        bc_derivative *= 0
+        #bc_derivative *= 0
         rhs = createMatrix.generate_outer_rhs(n, bc_derivative)
     else:
-        pass
-        #rhs = createMatrix.generate_inner_rhs(rhs_init.copy(), 0*bc_rec_from_0, 0*bc_rec_from_2)
+        rhs = createMatrix.generate_inner_rhs(rhs_init.copy(), bc_rec_from_0, bc_rec_from_2)
         #print(rhs, "\n###\n")
     prev_sol = sol
     sol = sl.solve(A, rhs)
@@ -67,4 +67,8 @@ for i in range(n_iter):
         comm.Send(bc_send_to_2, dest = 2)
         comm.Recv(bc_rec_from_0, source = 0)
         comm.Recv(bc_rec_from_2, source = 2)
+
+#if rank == 0:
+    #print(sol.reshape((n,n)))
+    #plottest.plot_temp(sol.reshape((n,n)))
 print("room", rank, ":\n", sol, "\n###\n")
