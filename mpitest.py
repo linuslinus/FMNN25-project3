@@ -66,4 +66,27 @@ for i in range(n_iter):
 #if rank == 0:
     #print(sol.reshape((n,n)))
     #plottest.plot_temp(sol.reshape((n,n)))
-print("room", rank, ":\n", sol, "\n###\n")
+#print("room", rank, ":\n", sol, "\n###\n")
+
+if rank == 0:
+	comm.Send(sol, dest = 1)
+
+if rank == 2:
+	comm.Send(sol, dest = 1)
+
+if rank == 1:
+	sol_rows = 2*n +1
+	sol_cols = 3*n
+	solmatrix  = np.zeros((2*n +1 ,3*n)) # matrix for the appartment with all inner points
+	sol1 = np.zeros((n*n, 1))
+	sol3 = np.zeros((n*n, 1))
+	sol2 = sol
+	comm.Recv(sol1, source = 0)
+	comm.Recv(sol2, source = 2)
+
+	print(len(sol1))
+	print(len(sol2))
+	print(len(sol3))
+	
+	# 1) next step reshape all sols and insert these into the solmatrix
+	# 2) somhow print the solmatrix and fix the parts of the solmatrix that are not in the appartment
