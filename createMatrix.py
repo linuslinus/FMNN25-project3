@@ -27,14 +27,6 @@ def generate_outer_matrix(n):
                 A[k][ind(i, j + 1, n)] -= 1
     return A/dx/dx
     
-def generate_inner_matrix(n): 
-	dx = 1/(n + 1) # dirichlet conditions for the large room 
-	elm = 2*n**2 + n #nbr of unknowns
-	A = np.zeros((elm,elm))
-	A = np.diag(-4*np.ones(elm)) + np.diag(np.ones(elm-1),1) + np.diag(np.ones(elm-1),-1)
-	A += np.diag(np.ones(elm-n), n) + np.diag(np.ones(elm-n), -n)
-	return A/dx/dx
-
 def generate_outer_rhs(n, bc_derivative):
     dx = 1/(n + 1)
     rhs = np.zeros((n*n, 1))
@@ -50,6 +42,56 @@ def generate_outer_rhs(n, bc_derivative):
             elif j == n - 1:
                 rhs[k] += -40
     return rhs/dx/dx
+    
+def generate_inner_matrix(n): 
+	dx = 1/(n + 1) # dirichlet conditions for the large room 
+	elm = 2*n**2 + n #nbr of unknowns
+	A = np.zeros((elm,elm))
+	A = np.diag(-4*np.ones(elm)) + np.diag(np.ones(elm-1),1) + np.diag(np.ones(elm-1),-1)
+	A += np.diag(np.ones(elm-n), n) + np.diag(np.ones(elm-n), -n)
+	return A/dx/dx
+	
+def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
+    '''Creates an initiate b1 (A1 x = b1) which is to be stored and used in
+    b1_generate. A1 refers to the middle room. '''
+    
+    nelm = 2*n**2 + n
+    
+    b = np.zeros(nelm)
+    first_loop = n**2+2
+    
+    for k in range(first_loop):
+        if k//n == 0:
+            b[k] -= gamma_H
+        if k%n == 0:
+            b[k] -= gamma_N
+    
+    for k in range(first_loop, nelm):
+        if k//n == 2*n:
+            b[k] -= gamma_WF
+        if k%n == n-1:
+            b[k] -= gamma_N
+            
+    return b
+    
+def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
+    '''Updates b1 with the new Dirichlet conditions. OBS: gamma:s are as in 
+    project description.'''
+    
+    nelm = len(inner_rhs_initiated)
+    n = len(gamma_1)
+    first_loop = n**2+2
+    
+    for k in range(first_loop):
+        if k%n == n-1:
+            inner_rhs_initiated[k] -= gamma_2[k//n]
+    
+    for k in range(first_loop, nelm):
+        if k%n == 0:
+            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]
+            
+    return inner_rhs_initiated
+
 
 if __name__ == '__main__':
     n = 5
