@@ -83,10 +83,14 @@ if rank == 1:
 	sol2 = sol
 	comm.Recv(sol1, source = 0)
 	comm.Recv(sol2, source = 2)
-
 	print(len(sol1))
 	print(len(sol2))
 	print(len(sol3))
-	
+	print_solution(solmatrix, sol1, sol2, sol3)
+
+
+def print_solution(solmatrix, sol1, sol2, sol3)
 	# 1) next step reshape all sols and insert these into the solmatrix
-	# 2) somhow print the solmatrix and fix the parts of the solmatrix that are not in the appartment
+	# 2) somhow print the solmatrix and fix the parts of the solmatrix that are not in the 				appartment 
+	# 3) also print the bounderys to the 
+	pass
