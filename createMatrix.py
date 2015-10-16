@@ -26,6 +26,14 @@ def generate_outer_matrix(n):
             elif j == n - 1:
                 A[k][ind(i, j + 1, n)] -= 1
     return A/dx/dx
+    
+def generate_inner_matrix(n): 
+	dx = 1/(n + 1) # dirichlet conditions for the large room 
+	elm = 2*n**2 + n #nbr of unknowns
+	A = np.zeros((elm,elm))
+	A = np.diag(-4*np.ones(elm)) + np.diag(np.ones(elm-1),1) + np.diag(np.ones(elm-1),-1)
+	A += np.diag(np.ones(elm-n), n) + np.diag(np.ones(elm-n), -n)
+	return A/dx/dx
 
 def generate_outer_rhs(n, bc_derivative):
     dx = 1/(n + 1)
@@ -44,8 +52,9 @@ def generate_outer_rhs(n, bc_derivative):
     return rhs/dx/dx
 
 if __name__ == '__main__':
-    n = 4
-    A = generate_outer_matrix(n)
-    rhs = generate_outer_rhs(n)
-    print(sl.solve(A, rhs))
+    n = 5
+    A = generate_inner_matrix(n)
+    print(A)
+    #rhs = generate_outer_rhs(n)
+    #print(sl.solve(A, rhs))
 
