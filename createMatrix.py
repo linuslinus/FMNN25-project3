@@ -56,8 +56,9 @@ def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
     b1_generate. A1 refers to the middle room. '''
     
     nelm = 2*n**2 + n
+    dx = 1/(n + 1)
     
-    b = np.zeros(nelm)
+    b = np.zeros((nelm, 1))
     first_loop = n**2+2
     
     for k in range(first_loop):
@@ -72,7 +73,7 @@ def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
         if k%n == n-1:
             b[k] -= gamma_N
             
-    return b
+    return b/dx/dx
     
 def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     '''Updates b1 with the new Dirichlet conditions. OBS: gamma:s are as in 
@@ -80,22 +81,25 @@ def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     
     nelm = len(inner_rhs_initiated)
     n = len(gamma_1)
+    dx = 1/(n + 1)
     first_loop = n**2+2
     
     for k in range(first_loop):
         if k%n == n-1:
-            inner_rhs_initiated[k] -= gamma_2[k//n]
+            inner_rhs_initiated[k] -= gamma_2[k//n]/dx/dx
     
     for k in range(first_loop, nelm):
         if k%n == 0:
-            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]
+            inner_rhs_initiated[k] -= gamma_1[(kk-1)//n - n]/dx/dx
             
     return inner_rhs_initiated
 
 
 if __name__ == '__main__':
-    n = 5
-    A = generate_inner_matrix(n)
+    n = 3
+    rhs = generate_inner_rhs_init(n)
+    A = generate_inner_matrix(n)/16
+    print(rhs)
     print(A)
     #rhs = generate_outer_rhs(n)
     #print(sl.solve(A, rhs))
