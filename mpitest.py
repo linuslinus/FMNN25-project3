@@ -2,7 +2,7 @@ import numpy as np
 import scipy.linalg as sl
 from mpi4py import MPI
 import createMatrix
-import plottest
+#import plottest
 
 def is_outer(rank):
     return rank == 0 or rank == 2
@@ -37,17 +37,17 @@ for i in range(n_iter):
         bc_derivative = np.zeros((n, 1))
         if rank == 0:
             for j in range(n):
-                bc_derivative[j] = (sol[(n - 1) + j*n] - bc_rec[j])/2/dx
+                bc_derivative[j] = (sol[(n - 1) + j*n] - bc_rec[j])/float(2*dx)
         else:
             for j in range(n):
-                bc_derivative[j] = (sol[j*n] - bc_rec[j])/2/dx
+                bc_derivative[j] = (sol[j*n] - bc_rec[j])/float(2*dx)
         #bc_derivative *= 0
         rhs = createMatrix.generate_outer_rhs(n, bc_derivative)
     else:
         rhs = createMatrix.generate_inner_rhs(rhs_init.copy(), bc_rec_from_0, bc_rec_from_2)
         #print(rhs, "\n###\n")
     prev_sol = sol
-    sol = sl.solve(A, rhs)
+    sol = np.linalg.solve(A, rhs) # used to be sl.solve(A, rhs)
     sol = 0.8*sol + 0.2*prev_sol
 
     # send data to other processes

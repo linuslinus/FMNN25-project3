@@ -25,7 +25,7 @@ def generate_outer_matrix(n):
                 A[k][k] += 1 # neumann condition
             elif j == n - 1:
                 A[k][ind(i, j + 1, n)] -= 1
-    return A/dx/dx
+    return A/float(dx^2)
     
 def generate_outer_rhs(n, bc_derivative):
     dx = 1/(n + 1)
@@ -41,7 +41,7 @@ def generate_outer_rhs(n, bc_derivative):
                 rhs[k] += dx*bc_derivative[i]
             elif j == n - 1:
                 rhs[k] += -40
-    return rhs/dx/dx
+    return rhs/ float(dx^2)
     
 def generate_inner_matrix(n): 
     dx = 1/(n + 1) # dirichlet conditions for the large room 
@@ -51,7 +51,7 @@ def generate_inner_matrix(n):
     for k in range(1, 2*n + 1):
         sup_sub[n*k -1] = 0
     A += np.diag(sup_sub, 1) + np.diag(sup_sub, -1)
-    return A/dx/dx
+    return A/float(dx^2)
 
 def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
     '''Creates an initiate b1 (A1 x = b1) which is to be stored and used in
@@ -75,7 +75,7 @@ def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
         if k%n == n-1:
             b[k] -= gamma_N
             
-    return b/dx/dx
+    return b/float(dx^2)
     
 def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     '''Updates b1 with the new Dirichlet conditions. OBS: gamma:s are as in 
@@ -88,21 +88,21 @@ def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     
     for k in range(first_loop):
         if k%n == n-1:
-            inner_rhs_initiated[k] -= gamma_2[k//n]/dx/dx
+            inner_rhs_initiated[k] -= gamma_2[k//n]/float(dx^2)
     
     for k in range(first_loop, nelm):
         if k%n == 0:
-            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]/dx/dx
+            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]/float(dx^2)
             
     return inner_rhs_initiated
 
 
-if __name__ == '__main__':
-    n = 3
-    rhs = generate_inner_rhs_init(n)
-    A = generate_inner_matrix(n)/16
-    print(rhs)
-    print(A)
-    #rhs = generate_outer_rhs(n)
-    #print(sl.solve(A, rhs))
+#if __name__ == '__main__':
+#    n = 3
+#    rhs = generate_inner_rhs_init(n)
+#    A = generate_inner_matrix(n)/16
+#    print(rhs)
+#    print(A)
+#    #rhs = generate_outer_rhs(n)
+#    #print(sl.solve(A, rhs))
 

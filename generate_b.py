@@ -30,7 +30,7 @@ def b1_initiate(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
         if k%n == n-1:
             b[k] -= gamma_N
             
-    return b/dx/dx
+    return np.divide(b, dx^2)
     
 def b_generate(b1_initiated, gamma_1, gamma_2):
     '''Updates b1 with the new Dirichlet conditions. OBS: gamma:s are as in 
