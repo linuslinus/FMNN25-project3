@@ -83,7 +83,7 @@ def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     
     nelm = len(inner_rhs_initiated)
     n = len(gamma_1)
-    dx = 1/(n + 1)
+    dx = 1/float((n + 1))
     first_loop = n**2+2
     
     for k in range(first_loop):
