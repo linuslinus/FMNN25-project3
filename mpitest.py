@@ -35,13 +35,8 @@ for i in range(n_iter):
     # calculate solution
     if is_outer(rank):
         bc_derivative = np.zeros((n, 1))
-        if rank == 0:
-            for j in range(n):
-                bc_derivative[j] = (sol[(n - 1) + j*n] - bc_rec[j])/float(2*dx)
-        else:
-            for j in range(n):
-                bc_derivative[j] = (sol[j*n] - bc_rec[j])/float(2*dx)
-        #bc_derivative *= 0
+        for j in range(n):
+            bc_derivative[j] = (sol[j*n] - bc_rec[j])/float(2*dx)
         rhs = createMatrix.generate_outer_rhs(n, bc_derivative)
     else:
         rhs = createMatrix.generate_inner_rhs(rhs_init.copy(), bc_rec_from_0, bc_rec_from_2)
