@@ -105,4 +105,3 @@ def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
 #    print(A)
 #    #rhs = generate_outer_rhs(n)
 #    #print(sl.solve(A, rhs))
-
