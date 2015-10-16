@@ -44,13 +44,15 @@ def generate_outer_rhs(n, bc_derivative):
     return rhs/dx/dx
     
 def generate_inner_matrix(n): 
-	dx = 1/(n + 1) # dirichlet conditions for the large room 
-	elm = 2*n**2 + n #nbr of unknowns
-	A = np.zeros((elm,elm))
-	A = np.diag(-4*np.ones(elm)) + np.diag(np.ones(elm-1),1) + np.diag(np.ones(elm-1),-1)
-	A += np.diag(np.ones(elm-n), n) + np.diag(np.ones(elm-n), -n)
-	return A/dx/dx
-	
+    dx = 1/(n + 1) # dirichlet conditions for the large room 
+    elm = 2*n**2 + n #nbr of unknowns
+    A = np.diag(-4*np.ones(elm)) + np.diag(np.ones(nelm-n), n) + np.diag(np.ones(nelm-n), -n)
+    sup_sub = np.ones(nelm - 1)
+    for k in range(1, 2*n + 1):
+        sup_sub[n*k -1] = 0
+    A += np.diag(sup_sub, 1) + np.diag(sup_sub, -1)
+    return A/dx/dx
+
 def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
     '''Creates an initiate b1 (A1 x = b1) which is to be stored and used in
     b1_generate. A1 refers to the middle room. '''
