@@ -29,3 +29,5 @@ for i in range(n):
 
 if __name__ == '__main__':
     print(A)
+
+
