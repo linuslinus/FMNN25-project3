@@ -27,9 +27,8 @@ def generate_outer_matrix(n):
                 A[k][ind(i, j + 1)] -= 1
     return A/dx/dx
 
-def generate_outer_rhs(n):
+def generate_outer_rhs(n, bc_derivative):
     dx = 1/(n + 1)
-    bc_derivative = np.ones((n, 1))
     rhs = np.zeros((n*n, 1))
     for i in range(n):
         for j in range(n):
