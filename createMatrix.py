@@ -97,11 +97,8 @@ def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     return inner_rhs_initiated
 
 
-#if __name__ == '__main__':
-#    n = 3
-#    rhs = generate_inner_rhs_init(n)
-#    A = generate_inner_matrix(n)/16
-#    print(rhs)
-#    print(A)
-#    #rhs = generate_outer_rhs(n)
-#    #print(sl.solve(A, rhs))
+if __name__ == '__main__':
+    n = 6
+    dx = 1/(n + 1)
+    A = generate_outer_rhs(n, np.ones((n,1)))*dx*dx
+    print(A)
