@@ -32,16 +32,18 @@ rank = comm.Get_rank()
 n = 20
 dx = 1/float(n + 1)
 omega = 0.8
-n_iter = 15
+n_iter = 150
 
 # initializing for first iteration
 if is_outer(rank):
     A = createMatrix.generate_outer_matrix(n)
+    lu_piv = sl.lu_factor(A)
     sol = np.zeros((n*n, 1))
     bc_send_to_1 = np.zeros((n, 1))
     bc_rec_from_1 = np.zeros((n, 1))
 else:
     A = createMatrix.generate_inner_matrix(n)
+    lu_piv = sl.lu_factor(A)
     rhs_init = createMatrix.generate_inner_rhs_init(n)
     sol = np.zeros((2*n*n + n, 1))
     bc_send_to_0 = np.zeros((n, 1))
@@ -57,7 +59,8 @@ for i in range(n_iter):
     else:
         rhs = createMatrix.generate_inner_rhs(rhs_init.copy(), bc_rec_from_0, bc_rec_from_2)
     prev_sol = sol
-    sol = np.linalg.solve(A, rhs) # used to be sl.solve(A, rhs)
+    #sol = np.linalg.solve(A, rhs) # used to be sl.solve(A, rhs)
+    sol = sl.lu_solve(lu_piv, rhs) # much faster!
     sol = omega*sol + (1 - omega)*prev_sol
     if is_outer(rank):
         bc_send_to_1 = sol[::n].copy() # copy is needed since mpi requires contigious data to send
