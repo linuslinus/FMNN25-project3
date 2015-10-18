@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.linalg as sl
 
 def ind(i, j, n):
 # returns the the one dimensional index corresponding to row i, col j
@@ -25,7 +24,7 @@ def generate_outer_matrix(n):
                 A[k][k] += 1 # neumann condition
             elif j == n - 1:
                 A[k][ind(i, j + 1, n)] -= 1
-    return A/float(dx*dx)
+    return A/dx/dx
     
 def generate_outer_rhs(n, bc_derivative):
     dx = 1/float(n + 1)
@@ -41,7 +40,7 @@ def generate_outer_rhs(n, bc_derivative):
                 rhs[k] += dx*bc_derivative[i]
             elif j == n - 1:
                 rhs[k] += -40
-    return rhs/ float(dx*dx)
+    return rhs/dx/dx
     
 def generate_inner_matrix(n): 
     dx = 1/float(n + 1) # dirichlet conditions for the large room 
@@ -51,7 +50,7 @@ def generate_inner_matrix(n):
     for k in range(1, 2*n + 1):
         sup_sub[n*k -1] = 0
     A += np.diag(sup_sub, 1) + np.diag(sup_sub, -1)
-    return A/float(dx*dx)
+    return A/dx/dx
 
 def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
     '''Creates an initiate b1 (A1 x = b1) which is to be stored and used in
@@ -75,7 +74,7 @@ def generate_inner_rhs_init(n, gamma_H = 40, gamma_N = 15, gamma_WF = 5):
         if k%n == n-1:
             b[k] -= gamma_N
             
-    return b/float(dx*dx)
+    return b/dx/dx
     
 def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     '''Updates b1 with the new Dirichlet conditions. OBS: gamma:s are as in 
@@ -92,13 +91,6 @@ def generate_inner_rhs(inner_rhs_initiated, gamma_1, gamma_2):
     
     for k in range(first_loop, nelm):
         if k%n == 0:
-            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]/(dx*dx) # (k-1)//n - n
+            inner_rhs_initiated[k] -= gamma_1[(k-1)//n - n]/dx/dx # (k-1)//n - n
             
     return inner_rhs_initiated
-
-
-if __name__ == '__main__':
-    n = 6
-    dx = 1/(n + 1)
-    A = generate_outer_rhs(n, np.ones((n,1)))*dx*dx
-    print(A)
