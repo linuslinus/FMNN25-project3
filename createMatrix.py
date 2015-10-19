@@ -1,3 +1,10 @@
+
+"""
+Mon Oct 19 2015, Project 3 FMNN25
+
+@author: Linus Jangland, Anton Roth and Samuel Wiqvist
+"""
+
 import numpy as np
 
 def ind(i, j, n):
